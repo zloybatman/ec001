@@ -55,86 +55,94 @@ def get_metallplace_data():
 def get_asianmetal_data():
     try:
         driver = webdriver.Chrome(executable_path=config.executed_path)
-        driver.set_page_load_timeout(30)
+        driver.set_page_load_timeout(20)
         try:
             driver.get(url=config.url_of_asianmetal)
+
         except Exception as ex:
             print('', end='')
         finally:
+            driver.maximize_window()
             driver.find_element(By.XPATH, '//*[@id="loginbox"]/a/span').click()
 
-            username = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="cnopenloginname"]')))
-            username.send_keys("as.kharitonov@severstal.com")
+            driver.find_element(By.XPATH, '//*[@id="cnopenloginname"]').send_keys("as.kharitonov@severstal.com")
 
-            password = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="cnopenloginpwd"]')))
-            password.send_keys("AM2019")
+            driver.find_element(By.XPATH, '//*[@id="cnopenloginpwd"]').send_keys("AM2019")
 
-            time.sleep(5)
+            time.sleep(2)
 
-            driver.find_element(By.XPATH, '//*[@id="openloginbutn"]').click()
+            driver.find_element(By.XPATH, '//*[@id="openloginbutn"]').click()   #ok
 
-            time.sleep(5)
+            time.sleep(2)
 
-            driver.find_element(By.XPATH, '//*[@id="showBut"]/input[1]').click()
+            driver.find_element(By.XPATH, '//*[@id="showBut"]/input[1]').click()  #log on
 
-            time.sleep(5)
+            time.sleep(2)
+            try:
+                driver.find_element(By.XPATH, '//*[@id="showBut"]/input').click() #ok
+                time.sleep(3)
+            except Exception as ex:
+                print("")
+            finally:
 
-            driver.find_element(By.XPATH, '//*[@id="showBut"]/input').click()
+                try:
+                    element = driver.find_element(By.XPATH, '//*[@id="priceParamDiv"]/option[16]')
+                except Exception as ex:
+                    print("", end='')
+                finally:
+                    print(element.text)
+                    element.click()
 
-            time.sleep(5)
+                    driver.find_element(By.XPATH, ('//*[@id="strYear"]/option[' + str(23 + datetime.datetime.now().year-2022) + ']')).click()
 
-            element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="priceParamDiv"]/option[16]')))
-            print(element.text)
-            element.click()
+                    driver.find_element(By.XPATH, ('//*[@id="strYear"]/option[' + str(23 + datetime.datetime.now().year - 2022) + ']')).click()
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, ('//*[@id="strYear"]/option[' + str(23 + datetime.datetime.now().year-2022) + ']')))).click()
+                    driver.find_element(By.XPATH, '//*[@id="strMonth"]/option[' + str(datetime.datetime.now().month - 1) +']').click()
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="strMonth"]/option[' + str(datetime.datetime.now().month - 1) +']'))).click()
+                    driver.find_element(By.XPATH, '//*[@id="strDay"]/option[1]').click()
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="strDay"]/option[1]'))).click()
+                    driver.find_element(By.XPATH, '//*[@id="year"]/option[' + str(23 + datetime.datetime.now().year-2022) + ']').click()
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="year"]/option[' + str(23 + datetime.datetime.now().year-2022) + ']'))).click()
+                    driver.find_element(By.XPATH, '//*[@id="month"]/option[' + str(datetime.datetime.now().month - 1) + ']').click()
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="month"]/option[' + str(datetime.datetime.now().month - 1) + ']'))).click()
+                    driver.find_element(By.XPATH, '//*[@id="day"]/option[' + str(config.last_date(datetime.datetime.now().month - 1)) + ']').click()
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="day"]/option[' + str(config.last_date(datetime.datetime.now().month - 1)) + ']'))).click()
+                    driver.find_element(By.XPATH, '//*[@id="subId1"]').click()
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="subId1"]'))).click()
-
-            electrode_data = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mnthHghIdavg0"]')))
-            print(electrode_data.text.replace(" ", ""))
+                    time.sleep(5)
+                    electrode_data = driver.find_element(By.XPATH, '//*[@id="mnthHghIdavg0"]')
+                    print(electrode_data.text.replace(" ", ""))
 
 
 
-            element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="priceParamDiv"]/option[8]')))
-            print(element.text)
-            element.click()
+                    element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="priceParamDiv"]/option[8]')))
+                    print(element.text)
+                    element.click()
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="subId1"]'))).click()
+                    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="subId1"]'))).click()
 
-            time.sleep(5)
+                    time.sleep(5)
 
-            electrode_data = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mnthHghIdavg0"]')))
-            print(electrode_data.text.replace(" ", ""))
+                    electrode_data = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mnthHghIdavg0"]')))
+                    print(electrode_data.text.replace(" ", ""))
 
-            element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="priceParamDiv"]/option[10]')))
-            print(element.text)
-            element.click()
+                    element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="priceParamDiv"]/option[10]')))
+                    print(element.text)
+                    element.click()
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="subId1"]'))).click()
-            time.sleep(5)
+                    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="subId1"]'))).click()
+                    time.sleep(5)
 
-            electrode_data = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mnthHghIdavg0"]')))
-            print(electrode_data.text.replace(" ", ""))
-
+                    electrode_data = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mnthHghIdavg0"]')))
+                    print(electrode_data.text.replace(" ", ""))
+                    driver.close()
+                    driver.quit()
     except Exception as ex:
         print(ex)
         driver.close()
         driver.quit()
         get_asianmetal_data()
-    finally:
-        driver.close()
-        driver.quit()
+
 
 
 def get_eurostat_data():
