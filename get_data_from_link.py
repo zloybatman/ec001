@@ -9,8 +9,14 @@ import time
 import config
 import datetime
 import os
+import pandas
+import openpyxl
 
 from selenium.common.exceptions import TimeoutException
+
+global wb
+wb = openpyxl.Workbook()
+wb.create_sheet("Data from links", index=0)
 
 def get_rosstat_files():
     driver = webdriver.Chrome(executable_path=config.executed_path)
@@ -39,10 +45,12 @@ def get_metallplace_data():
     try:
         driver.get(url=config.url_of_metallplace_thisyear)
         element = driver.find_element(By.XPATH, '//*[@id="price-index-information-tabs-1"]/div[2]/div/form/ul[2]/li[3]')
-        print(element.text.split(" ")[1])
+        wb.worksheets[0]["D2"] = (element.text.split(" ")[1])
+        # print(element.text.split(" ")[1])
         driver.get(url=config.url_of_metallplace_lastyear)
         element = driver.find_element(By.XPATH, '//*[@id="price-index-information-tabs-1"]/div[2]/div/form/ul[2]/li[3]')
-        print(element.text.split(" ")[1])
+        wb.worksheets[0]["E2"] = (element.text.split(" ")[1])
+        # print(element.text.split(" ")[1])
     except Exception as ex:
         print(ex)
         driver.close()
@@ -90,7 +98,7 @@ def get_asianmetal_data():
                 except Exception as ex:
                     print("", end='')
                 finally:
-                    print(element.text)
+                    #print(element.text)
                     element.click()
 
                     driver.find_element(By.XPATH, ('//*[@id="strYear"]/option[' + str(23 + datetime.datetime.now().year-2022) + ']')).click()
@@ -111,12 +119,13 @@ def get_asianmetal_data():
 
                     time.sleep(5)
                     electrode_data = driver.find_element(By.XPATH, '//*[@id="mnthHghIdavg0"]')
-                    print(electrode_data.text.replace(" ", ""))
+                    wb.worksheets[0]["H2"] = electrode_data.text.replace(" ", "")
+                    #print(electrode_data.text.replace(" ", ""))
 
 
 
                     element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="priceParamDiv"]/option[8]')))
-                    print(element.text)
+                    #print(element.text)
                     element.click()
 
                     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="subId1"]'))).click()
@@ -124,19 +133,22 @@ def get_asianmetal_data():
                     time.sleep(5)
 
                     electrode_data = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mnthHghIdavg0"]')))
-                    print(electrode_data.text.replace(" ", ""))
+                    wb.worksheets[0]["I2"] = electrode_data.text.replace(" ", "")
+                    #print(electrode_data.text.replace(" ", ""))
 
                     element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="priceParamDiv"]/option[10]')))
-                    print(element.text)
+                    #print(element.text)
                     element.click()
 
                     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="subId1"]'))).click()
                     time.sleep(5)
 
                     electrode_data = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mnthHghIdavg0"]')))
-                    print(electrode_data.text.replace(" ", ""))
+                    wb.worksheets[0]["J2"] = electrode_data.text.replace(" ", "")
+                    #print(electrode_data.text.replace(" ", ""))
                     driver.close()
                     driver.quit()
+                    wb.save("data from links.xlsx")
     except Exception as ex:
         print(ex)
         driver.close()
@@ -170,7 +182,8 @@ def get_eurostat_data():
         driver.switch_to.window(driver.window_handles[0])
         time.sleep(1)
         driver.maximize_window()
-        print(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n'))-3])
+        wb.worksheets[0]["F2"] = driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n'))-3]
+        #print(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n'))-3])
         driver.find_element(By.XPATH, '//*[@id="TIME"]/button').click()
         driver.switch_to.window(driver.window_handles[1])
         time.sleep(1)
@@ -180,7 +193,8 @@ def get_eurostat_data():
         driver.find_element(By.XPATH, '//*[@id="updateExtractionButton"]').click()
         driver.switch_to.window(driver.window_handles[0])
         time.sleep(1)
-        print(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')) - 6])
+        wb.worksheets[0]["G2"] = driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')) - 6]
+        #print(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')) - 6])
     except Exception as ex:
         print(ex)
         driver.close()
@@ -192,8 +206,10 @@ def get_eurostat_data():
 
 def files():
     paths = sorted(Path('C:\\Users\\bm.latypov\\Downloads').iterdir(), key=os.path.getmtime)        #C:\\Users\\bm.latypov\\Downloads
-    print(paths[len(paths) - 1])
-    print(paths[len(paths) - 2])
+    wb.worksheets[0]["B2"] = str(paths[len(paths) - 1])
+    wb.worksheets[0]["C2"] = str(paths[len(paths) - 2])
+    #(paths[len(paths) - 1])
+    #print(paths[len(paths) - 2])
 
 
 #f = open("text.txt", "w")
