@@ -15,8 +15,9 @@ import openpyxl
 from selenium.common.exceptions import TimeoutException
 
 global wb
-wb = openpyxl.Workbook()
-wb.create_sheet("Data from links", index=0)
+
+wb = openpyxl.load_workbook(filename = "data from links.xlsx")
+wb.worksheets[0]['A' + str(2 + int(wb.worksheets[0]['S1'].value))] = datetime.datetime.now().date()
 
 def get_rosstat_files():
     driver = webdriver.Chrome(executable_path=config.executed_path)
@@ -40,16 +41,17 @@ def get_rosstat_files():
         driver.close()
         driver.quit()
     files()
+
 def get_metallplace_data():
     driver = webdriver.Chrome(executable_path=config.executed_path)
     try:
         driver.get(url=config.url_of_metallplace_thisyear)
         element = driver.find_element(By.XPATH, '//*[@id="price-index-information-tabs-1"]/div[2]/div/form/ul[2]/li[3]')
-        wb.worksheets[0]["D2"] = (element.text.split(" ")[1])
+        wb.worksheets[0]["D" + str(2 + int(wb.worksheets[0]['S1'].value))] = (element.text.split(" ")[1])
         # print(element.text.split(" ")[1])
         driver.get(url=config.url_of_metallplace_lastyear)
         element = driver.find_element(By.XPATH, '//*[@id="price-index-information-tabs-1"]/div[2]/div/form/ul[2]/li[3]')
-        wb.worksheets[0]["E2"] = (element.text.split(" ")[1])
+        wb.worksheets[0]["E" + str(2 + int(wb.worksheets[0]['S1'].value))] = (element.text.split(" ")[1])
         # print(element.text.split(" ")[1])
     except Exception as ex:
         print(ex)
@@ -77,18 +79,18 @@ def get_asianmetal_data():
 
             driver.find_element(By.XPATH, '//*[@id="cnopenloginpwd"]').send_keys("AM2019")
 
-            time.sleep(2)
+            time.sleep(5)
 
             driver.find_element(By.XPATH, '//*[@id="openloginbutn"]').click()   #ok
 
-            time.sleep(2)
+            time.sleep(5)
 
             driver.find_element(By.XPATH, '//*[@id="showBut"]/input[1]').click()  #log on
 
-            time.sleep(2)
+            time.sleep(5)
             try:
                 driver.find_element(By.XPATH, '//*[@id="showBut"]/input').click() #ok
-                time.sleep(3)
+                time.sleep(5)
             except Exception as ex:
                 print("")
             finally:
@@ -119,7 +121,7 @@ def get_asianmetal_data():
 
                     time.sleep(5)
                     electrode_data = driver.find_element(By.XPATH, '//*[@id="mnthHghIdavg0"]')
-                    wb.worksheets[0]["H2"] = electrode_data.text.replace(" ", "")
+                    wb.worksheets[0]["H" + str(2 + int(wb.worksheets[0]['S1'].value))] = electrode_data.text.replace(" ", "")
                     #print(electrode_data.text.replace(" ", ""))
 
 
@@ -133,7 +135,7 @@ def get_asianmetal_data():
                     time.sleep(5)
 
                     electrode_data = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mnthHghIdavg0"]')))
-                    wb.worksheets[0]["I2"] = electrode_data.text.replace(" ", "")
+                    wb.worksheets[0]["I" + str(2 + int(wb.worksheets[0]['S1'].value))] = electrode_data.text.replace(" ", "")
                     #print(electrode_data.text.replace(" ", ""))
 
                     element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="priceParamDiv"]/option[10]')))
@@ -144,10 +146,11 @@ def get_asianmetal_data():
                     time.sleep(5)
 
                     electrode_data = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mnthHghIdavg0"]')))
-                    wb.worksheets[0]["J2"] = electrode_data.text.replace(" ", "")
+                    wb.worksheets[0]["J" + str(2 + int(wb.worksheets[0]['S1'].value))] = electrode_data.text.replace(" ", "")
                     #print(electrode_data.text.replace(" ", ""))
                     driver.close()
                     driver.quit()
+                    wb.worksheets[0]['S1'] = (1 + int(wb.worksheets[0]['S1'].value))
                     wb.save("data from links.xlsx")
     except Exception as ex:
         print(ex)
@@ -182,7 +185,7 @@ def get_eurostat_data():
         driver.switch_to.window(driver.window_handles[0])
         time.sleep(1)
         driver.maximize_window()
-        wb.worksheets[0]["F2"] = driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n'))-3]
+        wb.worksheets[0]["F" + str(2 + int(wb.worksheets[0]['S1'].value))] = driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n'))-3]
         #print(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n'))-3])
         driver.find_element(By.XPATH, '//*[@id="TIME"]/button').click()
         driver.switch_to.window(driver.window_handles[1])
@@ -193,7 +196,7 @@ def get_eurostat_data():
         driver.find_element(By.XPATH, '//*[@id="updateExtractionButton"]').click()
         driver.switch_to.window(driver.window_handles[0])
         time.sleep(1)
-        wb.worksheets[0]["G2"] = driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')) - 6]
+        wb.worksheets[0]["G" + str(2 + int(wb.worksheets[0]['S1'].value))] = driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')) - 6]
         #print(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')[len(driver.find_element(By.XPATH, '//*[@id="xtCut"]').text.split('\n')) - 6])
     except Exception as ex:
         print(ex)
@@ -206,8 +209,8 @@ def get_eurostat_data():
 
 def files():
     paths = sorted(Path('C:\\Users\\bm.latypov\\Downloads').iterdir(), key=os.path.getmtime)        #C:\\Users\\bm.latypov\\Downloads
-    wb.worksheets[0]["B2"] = str(paths[len(paths) - 1])
-    wb.worksheets[0]["C2"] = str(paths[len(paths) - 2])
+    wb.worksheets[0]["B" + str(2 + int(wb.worksheets[0]['S1'].value))] = str(paths[len(paths) - 1])
+    wb.worksheets[0]["C" + str(2 + int(wb.worksheets[0]['S1'].value))] = str(paths[len(paths) - 2])
     #(paths[len(paths) - 1])
     #print(paths[len(paths) - 2])
 
